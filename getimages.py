@@ -17,7 +17,7 @@ print(len(play))
 # print('Beginning file download with wget module')
 try:
   for j in range(len(play)):
-    wget.download(url+play[i], 'test/')
+    wget.download(url+play[j], 'test2/')
 
 except Exception as exc:
   print('Exception details ' + str(exc) + ' Name of file= ' + play[i])
