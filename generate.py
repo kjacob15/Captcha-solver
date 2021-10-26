@@ -10,68 +10,44 @@ import numpy
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--width', help='Width of captcha image', type=int)
-    parser.add_argument('--height', help='Height of captcha image', type=int)
-    parser.add_argument('--length', help='Length of captchas in characters', type=int)
-    parser.add_argument('--count', help='How many captchas to generate', type=int)
-    parser.add_argument('--output-dir', help='Where to store the generated captchas', type=str)
-    parser.add_argument('--symbols', help='File with the symbols to use in captchas', type=str)
-    args = parser.parse_args()
+    wid = 128
+    ht = 64
+    count = 320000  # int(input())
+    output_dir = 'Build'
+    symbols = 'symbols.txt'
+    length = 6
 
-    if args.width is None:
-        print("Please specify the captcha image width")
-        args.width = 128
-        # exit(1)
+    captcha_generator = captcha.image.ImageCaptcha(width=wid, height=ht)
 
-    if args.height is None:
-        print("Please specify the captcha image height")
-        args.height = 64
-        # exit(1)
-
-    if args.length is None:
-        print("Please specify the captcha length")
-        args.length = 5
-        # exit(1)
-
-    if args.count is None:
-        print("Please specify the captcha count to generate")
-        args.count = int(input())
-        # exit(1)
-
-    if args.output_dir is None:
-        print("Please specify the captcha output directory")
-        args.output_dir = 'refine'
-        # exit(1)
-
-    if args.symbols is None:
-        print("Please specify the captcha symbols file")
-        args.symbols = 'symbols.txt'
-        # exit(1)
-
-    captcha_generator = captcha.image.ImageCaptcha(width=args.width, height=args.height)
-
-    symbols_file = open(args.symbols, 'r')
+    symbols_file = open(symbols, 'r')
     captcha_symbols = symbols_file.readline().strip()
     symbols_file.close()
 
     print("Generating captchas with symbol set {" + captcha_symbols + "}")
 
-    if not os.path.exists(args.output_dir):
-        print("Creating output directory " + args.output_dir)
-        os.makedirs(args.output_dir)
+    if not os.path.exists(output_dir):
+        print("Creating output directory " + output_dir)
+        os.makedirs(output_dir)
 
-    for i in range(args.count):
-        random_str = ''.join([random.choice(captcha_symbols) for j in range(args.length)])
-        image_path = os.path.join(args.output_dir, random_str + '.png')
+    for i in range(count):
+        path_str = ""
+        random_str = ''.join([random.choice(captcha_symbols)
+                             for j in range(length)])
+        path_str = random_str.replace(' ', '&')
+        image_path = os.path.join(output_dir, path_str + '.png')
         if os.path.exists(image_path):
             version = 1
-            while os.path.exists(os.path.join(args.output_dir, random_str + '_' + str(version) + '.png')):
+            print(version)
+            while os.path.exists(os.path.join(output_dir, path_str + '_' + str(version) + '.png')):
                 version += 1
-            image_path = os.path.join(args.output_dir, random_str + '_' + str(version) + '.png')
-
+            image_path = os.path.join(
+                output_dir, path_str + '_' + str(version) + '.png')
+        # print(random_str)
         image = numpy.array(captcha_generator.generate_image(random_str))
         cv2.imwrite(image_path, image)
+        print(i, random_str)
+
+    print("Completed captcha generation")
 
 
 if __name__ == '__main__':
