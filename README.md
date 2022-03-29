@@ -1,2 +1,4 @@
-# SC_project2
-Project 2 for scalable computing
+# Captcha Solver
+Project to solve captcha's of varying lenth using tensorflow and tensorflow light.
+
+Designed to integrate with IoT devices by performing the image recognition on the device and processing and training on the cloud.
